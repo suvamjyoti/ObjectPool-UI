@@ -1,16 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.IO;
 
 public class HighScoreDataModel : MonoBehaviour
 {
+    public class SaveObject{
+
+        public HighScore[] highScoreData;
+    };
+
     public struct HighScore
     {
         int sno;
         string name;
         int score;
 
-        public HighScore(int sno,string name,int score)
+        public HighScore(int sno, string name, int score)
         {
             this.sno = sno;
             this.name = name;
@@ -18,20 +22,31 @@ public class HighScoreDataModel : MonoBehaviour
         }
     };
 
-    List<HighScore> highScoreData;
-    
     public int StartFrom = 50;
+
+
 
     void Start()
     {
-        //populate with 5 scores
-        for(int i = 0; i < 100; i++)
-        {
+        string Save_Folder = Application.dataPath + "/SAVES";
+        SaveObject saveObject = new SaveObject();
 
-            string name = RandomNameGenerator();
-            //highScoreData.Add(new HighScore(i,name,i*Random.Range(1000,10000)));
-            Debug.Log(name);
+        //populate with 5 scores
+        for (int i = 0; i < 100; i++)
+        {
+            HighScore entry = new HighScore(i,RandomNameGenerator(),i*Random.Range(100,1000));
+            saveObject.highScoreData[i] = entry;
+            Debug.Log("sd");
         }
+
+        string json = JsonUtility.ToJson(saveObject);
+
+        if (!Directory.Exists(Save_Folder))
+        {
+            Directory.CreateDirectory(Save_Folder);
+        }
+
+        File.WriteAllText(Save_Folder +  "/save.txt", json);
 
     }
 
@@ -44,7 +59,7 @@ public class HighScoreDataModel : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            
+
             if (i == k)
             {
                 name += " ";
@@ -56,4 +71,4 @@ public class HighScoreDataModel : MonoBehaviour
         return name;
     }
 
-}
+    };
