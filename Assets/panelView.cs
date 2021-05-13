@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-
-
-
+using System;
 
 public class panelView : MonoBehaviour
 {
@@ -21,11 +19,11 @@ public class panelView : MonoBehaviour
         
     }
 
-    public void setPanelValue(string sNo,string name,string score)
+    public void setPanelValue(int sNo,string name,int score)
     {
         displayName.text = name;
-        serialNumber.text = sNo;
-        highScore.text = score;
+        serialNumber.text = sNo.ToString();
+        highScore.text = score.ToString();
     }
 
     //public void goUp()

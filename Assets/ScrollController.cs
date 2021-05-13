@@ -17,9 +17,7 @@ public class ScrollController : MonoBehaviour
 
     private GameObject currentBlock;
 
-    private static int _curentPanelStartIndex;
-    public static int curentPanelStartIndex { get { return _curentPanelStartIndex; } }
-
+    private static int _curentPanelIndex;
 
     #region Initialisation
 
@@ -29,9 +27,27 @@ public class ScrollController : MonoBehaviour
         moveUp.onClick.AddListener(MoveUp);
         moveDown.onClick.AddListener(MoveDown);
 
-        currentBlock = GenericObjectPool.Instance.spawner("Block", midPosition);
-        currentBlock.SetActive(true);
-        //currentBlock.transform.position = midPosition.position; 
+        _curentPanelIndex = _startSerialNo;
+
+        //currentBlock = GenericObjectPool.Instance.spawner("Block", midPosition);
+
+        if (_curentPanelIndex < 92)
+        {
+            ButtonInteraction(false);
+
+            currentBlock = GenericObjectPool.Instance.spawner("Block", midPosition);
+
+            UpdateData(currentBlock.GetComponent<BlockController>(), _curentPanelIndex, true);
+
+            currentBlock.transform.DOMove(midPosition.position, 0.5f);
+
+            StartCoroutine(reset(currentBlock));
+        }
+        else
+        {
+            Debug.Log(" entered _startSerialNo is too high ");
+        }
+
     }
 
     #endregion
@@ -40,28 +56,38 @@ public class ScrollController : MonoBehaviour
 
     private void MoveUp()
     {
-        ButtonInteraction(false);
+        if (_curentPanelIndex < 92)
+        {
+            ButtonInteraction(false);
 
-        currentBlock.transform.DOMove(topPosition.position, 0.2f);
+            currentBlock.transform.DOMove(topPosition.position, 0.2f);
 
-        GameObject temp = GenericObjectPool.Instance.spawner("Block",downPosition);
-        temp.transform.DOMove(midPosition.position, 0.5f);
+            GameObject temp = GenericObjectPool.Instance.spawner("Block", downPosition);
 
-        StartCoroutine(reset(temp));
+            UpdateData(temp.GetComponent<BlockController>(),_curentPanelIndex, true);
 
+            temp.transform.DOMove(midPosition.position, 0.5f);
+
+            StartCoroutine(reset(temp));
+        }
     }
 
     private void MoveDown()
     {
-        ButtonInteraction(false);
+        if (_curentPanelIndex > 8)
+        {
+            ButtonInteraction(false);
 
-        currentBlock.transform.DOMove(downPosition.position, 0.2f);
+            currentBlock.transform.DOMove(downPosition.position, 0.2f);
 
-        GameObject temp = GenericObjectPool.Instance.spawner("Block", topPosition);
-        temp.transform.DOMove(midPosition.position, 0.5f);
+            GameObject temp = GenericObjectPool.Instance.spawner("Block", topPosition);
 
-        StartCoroutine(reset(temp));
+            UpdateData(temp.GetComponent<BlockController>(),_curentPanelIndex-8, false);
 
+            temp.transform.DOMove(midPosition.position, 0.5f);
+
+            StartCoroutine(reset(temp));
+        }
     }
 
     #endregion
@@ -75,6 +101,20 @@ public class ScrollController : MonoBehaviour
         ButtonInteraction(true);
 
         currentBlock = temp;
+    }
+
+    private void UpdateData(BlockController block,int i,bool isGoingUp)
+    {
+        if (isGoingUp)
+        {
+            block.UpdatePanelData(i);
+            _curentPanelIndex += 8;
+        }
+        else
+        {
+            block.UpdatePanelData(i-8);
+            _curentPanelIndex = i-8;
+        }
     }
 
     private void ButtonInteraction(bool isInteractive)

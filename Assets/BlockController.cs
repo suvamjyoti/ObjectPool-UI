@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class BlockController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private panelView[] panelList;
+    
+    private void Awake()
     {
+        panelList = GetComponentsInChildren<panelView>();
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdatePanelData(int startIndex)
     {
-        
+        int i = startIndex;
+        foreach(panelView panel in panelList)
+        {
+            HighScoreDataModel highScore = HighScoreData.instance.getHighscoreData(i);
+            panel.setPanelValue(highScore.sno, highScore.name, highScore.score);
+            i++;
+        }
+
     }
+
 }
